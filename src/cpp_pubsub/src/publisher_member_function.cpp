@@ -1,8 +1,9 @@
 #include <chrono>
 #include <memory>
+#include <array>  // Include for array type
 
 #include "rclcpp/rclcpp.hpp"
-#include "tutorial_interfaces/msg/num.hpp"                                            // CHANGE
+#include "tutorial_interfaces/msg/joint_state.hpp"  // Change to use JointState
 
 using namespace std::chrono_literals;
 
@@ -12,7 +13,7 @@ public:
   MinimalPublisher()
   : Node("minimal_publisher"), count_(0)
   {
-    publisher_ = this->create_publisher<tutorial_interfaces::msg::JointState>("joint_state_topic", 10);
+    publisher_ = this->create_publisher<tutorial_interfaces::msg::JointState>("topic", 10);  // Change to JointState
     timer_ = this->create_wall_timer(
       500ms, std::bind(&MinimalPublisher::timer_callback, this));
   }
@@ -20,26 +21,25 @@ public:
 private:
   void timer_callback()
   {
-    auto message = sensor_msgs::msg::JointState();
-    
-    message.header.stamp = this->get_clock()->now();  // Set current timestamp
-    message.header.frame_id = "base_link";  // Set the frame ID (optional)
-    
-    // Set the joint positions, velocities, and torques
-    message.position = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};  // Example positions
-    message.velocity = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6};  // Example velocities
-    message.effort = {0.01, 0.02, 0.03, 0.04, 0.05, 0.06};  // Example torques/efforts
-    
-    RCLCPP_INFO_STREAM(this->get_logger(), "Publishing JointState: " 
-                        << "Positions: " << message.position
-                        << ", Velocities: " << message.velocity
-                        << ", Efforts: " << message.effort);
+    auto message = tutorial_interfaces::msg::JointState();  // Change to JointState
 
+    // Hardcoded dummy data for the JointState message
+    message.header.stamp = this->get_clock()->now();  // Set timestamp
+    message.header.frame_id = "base_link";            // You can modify this as needed
+
+    // Fill positions, velocities, and torques with dummy data
+    message.positions = {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f};
+    message.velocities = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+    message.torques = {1.0f, 1.1f, 1.2f, 1.3f, 1.4f, 1.5f};
+
+    RCLCPP_INFO_STREAM(this->get_logger(), "Publishing JointState: positions = " <<
+      message.positions[0] << ", velocities = " << message.velocities[0] << ", torques = " << message.torques[0]);
     publisher_->publish(message);
   }
 
   rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr publisher_;  // Publisher for JointState message
+  rclcpp::Publisher<tutorial_interfaces::msg::JointState>::SharedPtr publisher_;  // Change to JointState
+  size_t count_;
 };
 
 int main(int argc, char * argv[])
