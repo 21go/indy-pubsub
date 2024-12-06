@@ -1,0 +1,3 @@
+[submodule "src/cpp_pubsub/external/mujoco"]
+	path = src/cpp_pubsub/external/mujoco
+	url = https://github.com/deepmind/mujoco.git
