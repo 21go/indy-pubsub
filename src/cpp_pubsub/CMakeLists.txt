@@ -12,14 +12,11 @@ set(MUJOCO_PATH ${CMAKE_SOURCE_DIR}/external/mujoco)  # Adjust if necessary
 
 # Include MuJoCo headers
 include_directories(${MUJOCO_PATH}/include)
-
+include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/models)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 # Link MuJoCo libraries
 link_directories(${MUJOCO_PATH}/build/lib)
-
-# Default to C++14
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
-endif()
 
 # Enable some compiler warnings for GCC and Clang
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -36,6 +33,11 @@ find_package(glfw3 REQUIRED)
 
 # Add source files (adjust as necessary)
 set(SOURCE_FILES src/simulation_node.cpp)  # Your ROS 2 main source file
+
+# Add RPATH settings before creating the executable
+set(CMAKE_INSTALL_RPATH "${MUJOCO_PATH}/build/lib")
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Create the executable
 add_executable(simulator ${SOURCE_FILES})
